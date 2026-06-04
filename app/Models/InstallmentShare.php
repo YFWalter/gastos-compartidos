@@ -29,4 +29,27 @@ class InstallmentShare extends Model
     {
         return $this->belongsTo(Participant::class);
     }
+
+    public function estaPagada(): bool
+    {
+        return $this->estado === 'pagado';
+    }
+
+    /**
+     * Marca esta participación como pagada y sincroniza el estado de la cuota.
+     */
+    public function marcarPagada(): void
+    {
+        $this->update(['estado' => 'pagado', 'fecha_pago' => now()]);
+        $this->installment->sincronizarEstado();
+    }
+
+    /**
+     * Marca esta participación como pendiente y sincroniza el estado de la cuota.
+     */
+    public function marcarPendiente(): void
+    {
+        $this->update(['estado' => 'pendiente', 'fecha_pago' => null]);
+        $this->installment->sincronizarEstado();
+    }
 }
