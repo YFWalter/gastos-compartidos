@@ -13,6 +13,12 @@ Te recordamos que tenés las siguientes cuotas por pagar:
 
 **Total a pagar: $ {{ number_format($total, 2, ',', '.') }}**
 
+@if ($enlace)
+<x-mail::button :url="$enlace">
+Ver mis cuotas
+</x-mail::button>
+@endif
+
 Gracias,<br>
 {{ config('app.name') }}
 </x-mail::message>

@@ -108,7 +108,12 @@ class EnviarRecordatorios extends Command
         foreach ($participants as $data) {
             $envios[] = [
                 'to'       => $data['participant']->email,
-                'mailable' => new CuotasParticipanteMail($data['participant']->nombre_completo, $data['items'], (float) $data['total']),
+                'mailable' => new CuotasParticipanteMail(
+                    $data['participant']->nombre_completo,
+                    $data['items'],
+                    (float) $data['total'],
+                    $data['participant']->enlace_invitado,
+                ),
                 'label'    => "Aviso → {$data['participant']->email} (" . count($data['items']) . ' cuotas)',
             ];
         }

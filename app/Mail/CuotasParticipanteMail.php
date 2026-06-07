@@ -19,6 +19,7 @@ class CuotasParticipanteMail extends Mailable
         public string $nombre,
         public array $items,
         public float $total,
+        public string $enlace = '',
     ) {}
 
     public function envelope(): Envelope

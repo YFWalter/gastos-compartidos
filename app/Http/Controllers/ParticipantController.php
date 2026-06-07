@@ -79,6 +79,19 @@ class ParticipantController extends Controller
     }
 
     /**
+     * Regenera el token del participante (invalida el link de invitado anterior).
+     */
+    public function regenerarToken(Participant $participant): RedirectResponse
+    {
+        $this->authorizeParticipant($participant);
+
+        $participant->regenerarToken();
+
+        return redirect()->route('participants.edit', $participant)
+            ->with('status', 'Se generó un nuevo link de invitado. El anterior dejó de funcionar.');
+    }
+
+    /**
      * Asegura que el participante pertenece al usuario autenticado.
      */
     private function authorizeParticipant(Participant $participant): void

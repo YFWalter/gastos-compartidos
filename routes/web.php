@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GuestParticipantController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -9,8 +10,11 @@ use App\Http\Controllers\TrackingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route(auth()->check() ? 'dashboard' : 'login');
 });
+
+// Acceso público de invitado: el participante ve sus cuotas con su token, sin registrarse.
+Route::get('/p/{participant:token}', [GuestParticipantController::class, 'show'])->name('guest.participant');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
@@ -21,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('participants', ParticipantController::class)->except('show');
+    Route::patch('participants/{participant}/token', [ParticipantController::class, 'regenerarToken'])->name('participants.token');
     Route::resource('purchases', PurchaseController::class);
 
     // Seguimiento de cuotas y marcado de pagos.
