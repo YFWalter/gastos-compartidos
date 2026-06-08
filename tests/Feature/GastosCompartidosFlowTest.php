@@ -59,9 +59,31 @@ class GastosCompartidosFlowTest extends TestCase
         $this->actingAs($user)->post('/participants', ['nombre' => 'Juan'])
             ->assertRedirect(route('participants.index'));
 
-        $participant = Participant::first();
+        $participant = Participant::where('nombre', 'Juan')->first();
         $this->assertSame($user->id, $participant->user_id);
         $this->assertNotEmpty($participant->token);
+    }
+
+    public function test_al_crear_un_usuario_se_crea_su_participante_titular(): void
+    {
+        $user = User::factory()->create(['name' => 'Walter Yáñez']);
+
+        $titular = $user->participants()->where('es_titular', true)->first();
+        $this->assertNotNull($titular);
+        $this->assertSame('Walter', $titular->nombre);
+        $this->assertSame('Yáñez', $titular->apellido);
+        $this->assertSame($user->email, $titular->email);
+    }
+
+    public function test_no_se_puede_eliminar_el_participante_titular(): void
+    {
+        $user = User::factory()->create();
+        $titular = $user->participants()->where('es_titular', true)->first();
+
+        $this->actingAs($user)->delete(route('participants.destroy', $titular))
+            ->assertRedirect(route('participants.index'));
+
+        $this->assertDatabaseHas('participants', ['id' => $titular->id]);
     }
 
     public function test_crear_compra_genera_cuotas_y_reparto_exacto(): void
@@ -86,7 +108,7 @@ class GastosCompartidosFlowTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user)->post('/participants', ['nombre' => 'Juan']);
-        $juan = Participant::first();
+        $juan = Participant::where('nombre', 'Juan')->first();
 
         $this->actingAs($user)->post('/purchases', [
             'descripcion' => 'X', 'monto_total' => 1000, 'cantidad_cuotas' => 2,

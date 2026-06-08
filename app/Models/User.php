@@ -47,6 +47,30 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted(): void
+    {
+        // Al registrarse un usuario, se crea su participante "titular" (él mismo),
+        // para poder incluirse en el reparto de sus propias compras.
+        static::created(function (User $user) {
+            $user->crearParticipanteTitular();
+        });
+    }
+
+    /**
+     * Crea (si no existe) el participante que representa al propio usuario.
+     */
+    public function crearParticipanteTitular(): Participant
+    {
+        $partes = preg_split('/\s+/', trim($this->name), 2);
+
+        return $this->participants()->create([
+            'nombre'     => $partes[0] !== '' ? $partes[0] : 'Yo',
+            'apellido'   => $partes[1] ?? null,
+            'email'      => $this->email,
+            'es_titular' => true,
+        ]);
+    }
+
     /**
      * Contactos/participantes cargados por el usuario.
      */

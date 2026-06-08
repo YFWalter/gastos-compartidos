@@ -72,6 +72,11 @@ class ParticipantController extends Controller
     {
         $this->authorizeParticipant($participant);
 
+        if ($participant->es_titular) {
+            return redirect()->route('participants.index')
+                ->with('status', 'No se puede eliminar tu propio participante (titular).');
+        }
+
         $participant->delete();
 
         return redirect()->route('participants.index')

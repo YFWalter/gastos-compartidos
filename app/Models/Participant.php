@@ -15,6 +15,11 @@ class Participant extends Model
         'apellido',
         'email',
         'telefono',
+        'es_titular',
+    ];
+
+    protected $casts = [
+        'es_titular' => 'boolean',
     ];
 
     protected static function booted(): void

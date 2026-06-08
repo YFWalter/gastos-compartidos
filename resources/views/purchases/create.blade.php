@@ -56,7 +56,8 @@
 
                         {{-- Reparto entre participantes --}}
                         @php
-                            $oldSplits = old('splits', [['participant_id' => '', 'porcentaje' => '']]);
+                            $titularId = $participants->firstWhere('es_titular', true)?->id;
+                            $oldSplits = old('splits', [['participant_id' => $titularId ?? '', 'porcentaje' => '']]);
                         @endphp
                         <div x-data="{
                                 rows: @js(array_values($oldSplits)),

@@ -42,6 +42,9 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $participant->nombre_completo }}
+                                            @if ($participant->es_titular)
+                                                <span class="ms-1 inline-flex rounded-full bg-indigo-100 text-indigo-800 px-2 py-0.5 text-xs font-medium">Vos</span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {{ $participant->email ?: '—' }}
@@ -53,12 +56,14 @@
                                             <div class="flex items-center justify-end gap-3">
                                                 <a href="{{ route('participants.edit', $participant) }}"
                                                     class="text-indigo-600 hover:text-indigo-900">Editar</a>
-                                                <form method="POST" action="{{ route('participants.destroy', $participant) }}"
-                                                    onsubmit="return confirm('¿Eliminar a {{ $participant->nombre_completo }}?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
-                                                </form>
+                                                @unless ($participant->es_titular)
+                                                    <form method="POST" action="{{ route('participants.destroy', $participant) }}"
+                                                        onsubmit="return confirm('¿Eliminar a {{ $participant->nombre_completo }}?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
+                                                    </form>
+                                                @endunless
                                             </div>
                                         </td>
                                     </tr>
