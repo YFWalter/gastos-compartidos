@@ -1,0 +1,92 @@
+name: Tests y Deploy a producción
+
+# Se ejecuta en cada push a main, o manualmente desde la pestaña Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # 1) Corre la suite de tests. Si algo falla, el deploy no se ejecuta.
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, sqlite3, mbstring
+
+      - name: Instalar dependencias PHP
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Compilar assets (necesario para el manifest de Vite en las vistas)
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparar entorno de pruebas
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Ejecutar tests
+        run: php artisan test
+
+  # 2) Compila assets y despliega al servidor por SSH.
+  deploy:
+    name: Deploy
+    needs: tests          # solo corre si 'tests' terminó OK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Compilar assets (npm run build)
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparar la clave SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Desplegar al servidor (con reintentos)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 8
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: |
+            SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=60 -i ~/.ssh/deploy_key"
+            PORT="${{ secrets.SSH_PORT }}"
+            REMOTE="${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}"
+            APP="${{ secrets.REMOTE_APP }}"
+            BUILD="${{ secrets.REMOTE_BUILD }}"
+
+            echo "==> 1/3 Actualizando código en el servidor"
+            ssh $SSH_OPTS -p "$PORT" "$REMOTE" "cd '$APP' && git fetch origin main && git reset --hard origin/main && rm -rf public/build"
+
+            echo "==> 2/3 Subiendo los assets compilados"
+            scp $SSH_OPTS -P "$PORT" -r public/build "$REMOTE:$APP/public/"
+
+            echo "==> 3/3 Sincronizando build al docroot y migrando"
+            ssh $SSH_OPTS -p "$PORT" "$REMOTE" "cd '$APP' && rm -rf '$BUILD' && cp -r public/build '$BUILD' && php artisan migrate --force && php artisan optimize:clear"
