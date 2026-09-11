@@ -4,10 +4,10 @@
 Te recordamos que tenés las siguientes cuotas por pagar:
 
 <x-mail::table>
-| Compra | Cuota | Vence | Monto |
-|:-------|:-----:|:-----:|------:|
+| Compra/Servicio | Detalle | Vence | Monto |
+|:-----------------|:-------:|:-----:|------:|
 @foreach ($items as $item)
-| {{ $item['descripcion'] }} | {{ $item['numero'] }}/{{ $item['cantidad'] }} | {{ $item['vencimiento']->format('d/m/Y') }} | $ {{ number_format($item['monto'], 2, ',', '.') }} |
+| {{ $item['descripcion'] }} | {{ $item['detalle'] }} | {{ $item['vencimiento']->format('d/m/Y') }} | $ {{ number_format($item['monto'], 2, ',', '.') }} |
 @endforeach
 </x-mail::table>
 

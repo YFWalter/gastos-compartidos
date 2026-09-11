@@ -86,6 +86,77 @@
                     </div>
                 @endforeach
             @endif
+
+            <h3 class="font-semibold text-lg text-gray-800 pt-4">Cargos de servicios</h3>
+
+            @if ($cargosPorMes->isEmpty())
+                <div class="bg-white shadow-sm sm:rounded-lg p-10 text-center text-gray-500">
+                    No hay cargos de servicios para mostrar. Registrá un servicio para empezar.
+                </div>
+            @else
+                @foreach ($cargosPorMes as $ym => $cargos)
+                    @php
+                        [$anio, $mes] = explode('-', $ym);
+                        $totalMes = $cargos->sum('monto');
+                        $pendienteMes = $cargos->flatMap->shares->where('estado', 'pendiente')->sum('monto');
+                    @endphp
+                    <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden">
+                        <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                            <h3 class="font-semibold text-gray-800">{{ $meses[(int) $mes] }} {{ $anio }}</h3>
+                            <div class="text-sm text-gray-500">
+                                Total: <span class="text-gray-900 font-medium">$ {{ number_format($totalMes, 2, ',', '.') }}</span>
+                                @if ($pendienteMes > 0)
+                                    · Pendiente: <span class="text-red-600 font-medium">$ {{ number_format($pendienteMes, 2, ',', '.') }}</span>
+                                @else
+                                    · <span class="text-green-600 font-medium">Todo cobrado</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vence</th>
+                                        <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio</th>
+                                        <th class="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                                        <th class="px-5 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                                        <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                        <th class="px-5 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach ($cargos as $cargo)
+                                        <tr>
+                                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600">{{ $cargo->vencimiento->format('d/m/Y') }}</td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-sm">
+                                                <a href="{{ route('services.show', $cargo->service) }}" class="text-indigo-600 hover:text-indigo-900">{{ $cargo->service->descripcion }}</a>
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 text-center">#{{ $cargo->numero }}</td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-900 text-right">$ {{ number_format($cargo->monto, 2, ',', '.') }}</td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-sm">
+                                                @if ($cargo->estaPagado())
+                                                    <span class="inline-flex rounded-full bg-green-100 text-green-800 px-2 py-0.5 text-xs font-medium">Pagado</span>
+                                                @else
+                                                    <span class="inline-flex rounded-full bg-gray-100 text-gray-600 px-2 py-0.5 text-xs font-medium">Pendiente</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-5 py-4 whitespace-nowrap text-right text-sm">
+                                                <form method="POST" action="{{ route('service-charges.toggle', $cargo) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="text-indigo-600 hover:text-indigo-900">
+                                                        {{ $cargo->estaPagado() ? 'Marcar pendiente' : 'Marcar pagado' }}
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
 </x-app-layout>

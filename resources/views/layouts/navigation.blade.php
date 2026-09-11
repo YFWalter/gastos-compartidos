@@ -22,6 +22,9 @@
                     <x-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
                         {{ __('Compras') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
+                        {{ __('Servicios') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('tracking.index')" :active="request()->routeIs('tracking.*')">
                         {{ __('Seguimiento') }}
                     </x-nav-link>
@@ -85,6 +88,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
                 {{ __('Compras') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
+                {{ __('Servicios') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tracking.index')" :active="request()->routeIs('tracking.*')">
                 {{ __('Seguimiento') }}

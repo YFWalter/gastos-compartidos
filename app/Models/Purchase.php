@@ -16,11 +16,13 @@ class Purchase extends Model
         'cantidad_cuotas',
         'fecha_primera_cuota',
         'notas',
+        'avisar_participantes',
     ];
 
     protected $casts = [
         'fecha_primera_cuota' => 'date',
         'monto_total' => 'decimal:2',
+        'avisar_participantes' => 'boolean',
     ];
 
     public function user(): BelongsTo

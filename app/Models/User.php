@@ -86,4 +86,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Purchase::class);
     }
+
+    /**
+     * Servicios recurrentes registrados por el usuario.
+     */
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
+    }
 }

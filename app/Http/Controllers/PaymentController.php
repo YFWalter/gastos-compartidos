@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Installment;
 use App\Models\InstallmentShare;
+use App\Models\ServiceCharge;
+use App\Models\ServiceChargeShare;
 use Illuminate\Http\RedirectResponse;
 
 class PaymentController extends Controller
@@ -32,6 +34,30 @@ class PaymentController extends Controller
         return back()->with('status', 'Cuota actualizada.');
     }
 
+    /**
+     * Alterna el estado de pago de una participación en un cargo de servicio.
+     */
+    public function toggleServiceChargeShare(ServiceChargeShare $share): RedirectResponse
+    {
+        $this->authorizeServiceChargeShare($share);
+
+        $share->estaPagada() ? $share->marcarPendiente() : $share->marcarPagada();
+
+        return back()->with('status', 'Pago actualizado.');
+    }
+
+    /**
+     * Alterna el estado de pago de un cargo de servicio completo (todas sus participaciones).
+     */
+    public function toggleServiceCharge(ServiceCharge $charge): RedirectResponse
+    {
+        $this->authorizeServiceCharge($charge);
+
+        $charge->estaPagado() ? $charge->marcarPendiente() : $charge->marcarPagado();
+
+        return back()->with('status', 'Cargo actualizado.');
+    }
+
     private function authorizeShare(InstallmentShare $share): void
     {
         abort_unless(
@@ -44,6 +70,22 @@ class PaymentController extends Controller
     {
         abort_unless(
             $installment->purchase->user_id === auth()->id(),
+            403
+        );
+    }
+
+    private function authorizeServiceChargeShare(ServiceChargeShare $share): void
+    {
+        abort_unless(
+            $share->serviceCharge->service->user_id === auth()->id(),
+            403
+        );
+    }
+
+    private function authorizeServiceCharge(ServiceCharge $charge): void
+    {
+        abort_unless(
+            $charge->service->user_id === auth()->id(),
             403
         );
     }

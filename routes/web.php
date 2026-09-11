@@ -6,6 +6,7 @@ use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,11 +28,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('participants', ParticipantController::class)->except('show');
     Route::patch('participants/{participant}/token', [ParticipantController::class, 'regenerarToken'])->name('participants.token');
     Route::resource('purchases', PurchaseController::class);
+    Route::resource('services', ServiceController::class);
+    Route::patch('services/{service}/cancelar', [ServiceController::class, 'cancelar'])->name('services.cancelar');
 
-    // Seguimiento de cuotas y marcado de pagos.
+    // Seguimiento de cuotas/cargos y marcado de pagos.
     Route::get('seguimiento', [TrackingController::class, 'index'])->name('tracking.index');
     Route::patch('participaciones/{share}/pago', [PaymentController::class, 'toggleShare'])->name('shares.toggle');
     Route::patch('cuotas/{installment}/pago', [PaymentController::class, 'toggleInstallment'])->name('installments.toggle');
+    Route::patch('participaciones-servicio/{share}/pago', [PaymentController::class, 'toggleServiceChargeShare'])->name('service-charge-shares.toggle');
+    Route::patch('cargos/{charge}/pago', [PaymentController::class, 'toggleServiceCharge'])->name('service-charges.toggle');
 });
 
 require __DIR__.'/auth.php';

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PurchaseRequest extends FormRequest
+class ServiceRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -19,12 +19,11 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'descripcion'         => ['required', 'string', 'max:255'],
-            'monto_total'         => ['required', 'numeric', 'min:0.01', 'max:99999999999'],
-            'cantidad_cuotas'     => ['required', 'integer', 'min:1', 'max:360'],
-            'fecha_primera_cuota' => ['required', 'date'],
-            'notas'               => ['nullable', 'string', 'max:2000'],
-            'avisar_participantes' => ['sometimes', 'boolean'],
+            'descripcion'              => ['required', 'string', 'max:255'],
+            'monto_mensual'            => ['required', 'numeric', 'min:0.01', 'max:99999999999'],
+            'fecha_primer_vencimiento' => ['required', 'date'],
+            'notas'                    => ['nullable', 'string', 'max:2000'],
+            'avisar_participantes'     => ['sometimes', 'boolean'],
 
             'splits'                  => ['required', 'array', 'min:1'],
             'splits.*.participant_id' => [
@@ -69,10 +68,9 @@ class PurchaseRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'descripcion'         => 'descripción',
-            'monto_total'         => 'monto total',
-            'cantidad_cuotas'     => 'cantidad de cuotas',
-            'fecha_primera_cuota' => 'fecha de la primera cuota',
+            'descripcion'              => 'descripción',
+            'monto_mensual'            => 'monto mensual',
+            'fecha_primer_vencimiento' => 'fecha del primer vencimiento',
         ];
     }
 }

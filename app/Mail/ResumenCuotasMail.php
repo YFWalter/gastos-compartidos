@@ -13,12 +13,13 @@ class ResumenCuotasMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array<int, array{descripcion: string, numero: int, cantidad: int, vencimiento: \Illuminate\Support\Carbon, pendiente: float, detalle: array<int, array{nombre: string, monto: string}>}>  $cuotas
+     * @param  array<int, array{descripcion: string, detalle: string, vencimiento: \Illuminate\Support\Carbon, pendiente: float, detalle_participantes: array<int, array{nombre: string, monto: string}>}>  $cuotas
      */
     public function __construct(
         public string $nombre,
         public array $cuotas,
         public float $total,
+        public string $enlace = '',
     ) {}
 
     public function envelope(): Envelope

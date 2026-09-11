@@ -50,6 +50,7 @@ class PurchaseController extends Controller
                 'cantidad_cuotas'     => $data['cantidad_cuotas'],
                 'fecha_primera_cuota' => $data['fecha_primera_cuota'],
                 'notas'               => $data['notas'] ?? null,
+                'avisar_participantes' => $request->boolean('avisar_participantes'),
             ]);
 
             foreach ($data['splits'] as $split) {
@@ -106,6 +107,7 @@ class PurchaseController extends Controller
             'descripcion' => ['required', 'string', 'max:255'],
             'notas'       => ['nullable', 'string', 'max:2000'],
         ]);
+        $data['avisar_participantes'] = $request->boolean('avisar_participantes');
 
         $purchase->update($data);
 

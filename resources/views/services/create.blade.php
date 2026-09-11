@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Nueva compra') }}
+            {{ __('Nuevo servicio') }}
         </h2>
     </x-slot>
 
@@ -10,42 +10,39 @@
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 @if ($participants->isEmpty())
                     <div class="text-center text-gray-600">
-                        <p class="mb-4">Primero necesitás cargar al menos un participante para poder repartir la compra.</p>
+                        <p class="mb-4">Primero necesitás cargar al menos un participante para poder repartir el servicio.</p>
                         <a href="{{ route('participants.create') }}">
                             <x-primary-button>{{ __('Cargar un participante') }}</x-primary-button>
                         </a>
                     </div>
                 @else
-                    <form method="POST" action="{{ route('purchases.store') }}" class="space-y-6">
+                    <form method="POST" action="{{ route('services.store') }}" class="space-y-6">
                         @csrf
 
                         <div>
                             <x-input-label for="descripcion" :value="__('Descripción')" />
                             <x-text-input id="descripcion" name="descripcion" type="text" class="mt-1 block w-full"
-                                :value="old('descripcion')" required autofocus />
+                                :value="old('descripcion')" placeholder="Netflix, alquiler, internet…" required autofocus />
                             <x-input-error class="mt-2" :messages="$errors->get('descripcion')" />
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="monto_total" :value="__('Monto total')" />
-                                <x-text-input id="monto_total" name="monto_total" type="number" step="0.01" min="0.01"
-                                    class="mt-1 block w-full" :value="old('monto_total')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('monto_total')" />
+                                <x-input-label for="monto_mensual" :value="__('Monto mensual')" />
+                                <x-text-input id="monto_mensual" name="monto_mensual" type="number" step="0.01" min="0.01"
+                                    class="mt-1 block w-full" :value="old('monto_mensual')" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('monto_mensual')" />
                             </div>
                             <div>
-                                <x-input-label for="cantidad_cuotas" :value="__('Cantidad de cuotas')" />
-                                <x-text-input id="cantidad_cuotas" name="cantidad_cuotas" type="number" min="1" max="360"
-                                    class="mt-1 block w-full" :value="old('cantidad_cuotas', 1)" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('cantidad_cuotas')" />
-                            </div>
-                            <div>
-                                <x-input-label for="fecha_primera_cuota" :value="__('1ª cuota')" />
-                                <x-text-input id="fecha_primera_cuota" name="fecha_primera_cuota" type="date"
-                                    class="mt-1 block w-full" :value="old('fecha_primera_cuota')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('fecha_primera_cuota')" />
+                                <x-input-label for="fecha_primer_vencimiento" :value="__('1er vencimiento')" />
+                                <x-text-input id="fecha_primer_vencimiento" name="fecha_primer_vencimiento" type="date"
+                                    class="mt-1 block w-full" :value="old('fecha_primer_vencimiento')" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('fecha_primer_vencimiento')" />
                             </div>
                         </div>
+                        <p class="-mt-4 text-xs text-gray-500">
+                            Los próximos cargos se generan solos, un mes después del anterior, hasta que canceles el servicio.
+                        </p>
 
                         <div>
                             <x-input-label for="notas" :value="__('Notas (opcional)')" />
@@ -60,7 +57,7 @@
                                 @checked(old('avisar_participantes', true))
                                 class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                             <label for="avisar_participantes" class="text-sm text-gray-700">
-                                {{ __('Avisar por email a los participantes cuando vence una cuota') }}
+                                {{ __('Avisar por email a los participantes cuando vence un cargo') }}
                             </label>
                         </div>
                         <p class="-mt-4 text-xs text-gray-500">
@@ -126,8 +123,8 @@
                         </div>
 
                         <div class="flex items-center gap-4 pt-2">
-                            <x-primary-button>{{ __('Registrar compra') }}</x-primary-button>
-                            <a href="{{ route('purchases.index') }}"
+                            <x-primary-button>{{ __('Registrar servicio') }}</x-primary-button>
+                            <a href="{{ route('services.index') }}"
                                 class="text-sm text-gray-600 underline hover:text-gray-900">{{ __('Cancelar') }}</a>
                         </div>
                     </form>

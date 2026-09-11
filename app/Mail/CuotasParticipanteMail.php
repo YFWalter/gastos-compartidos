@@ -13,7 +13,7 @@ class CuotasParticipanteMail extends Mailable
     use Queueable, SerializesModels;
 
     /**
-     * @param  array<int, array{descripcion: string, numero: int, cantidad: int, vencimiento: \Illuminate\Support\Carbon, monto: string}>  $items
+     * @param  array<int, array{descripcion: string, detalle: string, vencimiento: \Illuminate\Support\Carbon, monto: string}>  $items
      */
     public function __construct(
         public string $nombre,

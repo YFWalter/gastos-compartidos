@@ -11,7 +11,7 @@
         <header class="mb-6">
             <p class="text-sm text-gray-500">{{ config('app.name') }}</p>
             <h1 class="text-2xl font-semibold">Hola {{ $participant->nombre_completo }} 👋</h1>
-            <p class="text-gray-600 mt-1">Este es el detalle de tus cuotas.</p>
+            <p class="text-gray-600 mt-1">Este es el detalle de tus cuotas y cargos.</p>
         </header>
 
         {{-- Totales --}}
@@ -28,32 +28,32 @@
 
         {{-- Detalle --}}
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <h2 class="font-semibold p-5 pb-3">Tus cuotas</h2>
-            @if ($shares->isEmpty())
-                <p class="px-5 pb-5 text-sm text-gray-500">Todavía no tenés cuotas asignadas.</p>
+            <h2 class="font-semibold p-5 pb-3">Tus cuotas y cargos</h2>
+            @if ($items->isEmpty())
+                <p class="px-5 pb-5 text-sm text-gray-500">Todavía no tenés cuotas ni cargos asignados.</p>
             @else
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compra</th>
-                                <th class="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Cuota</th>
+                                <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compra/Servicio</th>
+                                <th class="px-5 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
                                 <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vence</th>
                                 <th class="px-5 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
                                 <th class="px-5 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($shares as $share)
+                            @foreach ($items as $item)
                                 <tr>
-                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-900">{{ $share->installment->purchase->descripcion }}</td>
-                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 text-center">{{ $share->installment->numero }} / {{ $share->installment->purchase->cantidad_cuotas }}</td>
-                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600">{{ $share->installment->vencimiento->format('d/m/Y') }}</td>
-                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-900 text-right">$ {{ number_format($share->monto, 2, ',', '.') }}</td>
+                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-900">{{ $item['descripcion'] }}</td>
+                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 text-center">{{ $item['detalle'] }}</td>
+                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600">{{ $item['vencimiento']->format('d/m/Y') }}</td>
+                                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-900 text-right">$ {{ number_format($item['monto'], 2, ',', '.') }}</td>
                                     <td class="px-5 py-4 whitespace-nowrap text-sm">
-                                        @if ($share->estaPagada())
+                                        @if ($item['estado'] === 'pagado')
                                             <span class="inline-flex rounded-full bg-green-100 text-green-800 px-2 py-0.5 text-xs font-medium">
-                                                Pagado{{ $share->fecha_pago ? ' · ' . $share->fecha_pago->format('d/m/Y') : '' }}
+                                                Pagado{{ $item['fecha_pago'] ? ' · ' . $item['fecha_pago']->format('d/m/Y') : '' }}
                                             </span>
                                         @else
                                             <span class="inline-flex rounded-full bg-gray-100 text-gray-600 px-2 py-0.5 text-xs font-medium">Pendiente</span>

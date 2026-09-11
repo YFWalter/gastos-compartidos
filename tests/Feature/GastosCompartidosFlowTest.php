@@ -22,7 +22,7 @@ class GastosCompartidosFlowTest extends TestCase
      *
      * @return array{user: User, juan: Participant, ana: Participant, purchase: Purchase}
      */
-    private function escenario(int $monto = 10000, int $cuotas = 3): array
+    private function escenario(int $monto = 10000, int $cuotas = 3, bool $avisarParticipantes = true): array
     {
         $user = User::factory()->create();
 
@@ -41,6 +41,7 @@ class GastosCompartidosFlowTest extends TestCase
             'monto_total'         => $monto,
             'cantidad_cuotas'     => $cuotas,
             'fecha_primera_cuota' => '2026-08-10',
+            'avisar_participantes' => $avisarParticipantes ? 1 : 0,
             'splits'              => [
                 ['participant_id' => $juan->id, 'porcentaje' => 60],
                 ['participant_id' => $ana->id, 'porcentaje' => 40],
@@ -197,6 +198,18 @@ class GastosCompartidosFlowTest extends TestCase
 
         Mail::assertSent(ResumenCuotasMail::class);          // al dueño
         Mail::assertSent(CuotasParticipanteMail::class, 2);   // a Juan y Ana
+    }
+
+    public function test_avisar_participantes_desactivado_no_envia_email_a_participantes(): void
+    {
+        Mail::fake();
+        $this->escenario(avisarParticipantes: false);
+
+        $this->artisan('recordatorios:enviar', ['--todas' => true, '--pausa' => 0])
+            ->assertSuccessful();
+
+        Mail::assertSent(ResumenCuotasMail::class);      // el dueño lo sigue recibiendo
+        Mail::assertNotSent(CuotasParticipanteMail::class); // Juan y Ana no reciben nada
     }
 
     public function test_paginas_principales_responden_ok(): void

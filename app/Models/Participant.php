@@ -77,6 +77,16 @@ class Participant extends Model
         return $this->hasMany(InstallmentShare::class);
     }
 
+    public function serviceSplits(): HasMany
+    {
+        return $this->hasMany(ServiceSplit::class);
+    }
+
+    public function serviceChargeShares(): HasMany
+    {
+        return $this->hasMany(ServiceChargeShare::class);
+    }
+
     public function getNombreCompletoAttribute(): string
     {
         return trim($this->nombre . ' ' . $this->apellido);
