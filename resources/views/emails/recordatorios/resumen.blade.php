@@ -1,7 +1,7 @@
 <x-mail::message>
 # Hola {{ $nombre }} 👋
 
-Estas son las cuotas próximas a vencer de tus compras y lo que adeuda cada participante:
+Estas son las cuotas y cargos próximos a vencer de tus compras y servicios, y lo que adeuda cada participante:
 
 @foreach ($cuotas as $cuota)
 **{{ $cuota['descripcion'] }}** — {{ $cuota['detalle'] }} · vence {{ $cuota['vencimiento']->format('d/m/Y') }}

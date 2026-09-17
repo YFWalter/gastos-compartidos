@@ -1,7 +1,7 @@
 <x-mail::message>
 # Hola {{ $nombre }} 👋
 
-Te recordamos que tenés las siguientes cuotas por pagar:
+Te recordamos que tenés las siguientes cuotas y cargos por pagar:
 
 <x-mail::table>
 | Compra/Servicio | Detalle | Vence | Monto |
@@ -15,7 +15,7 @@ Te recordamos que tenés las siguientes cuotas por pagar:
 
 @if ($enlace)
 <x-mail::button :url="$enlace">
-Ver mis cuotas
+Ver mis cuotas y cargos
 </x-mail::button>
 @endif
 

@@ -16,6 +16,8 @@ class ParticipantController extends Controller
     public function index(Request $request): View
     {
         $participants = $request->user()->participants()
+            ->withSum(['installmentShares as pendiente_cuotas' => fn ($q) => $q->where('estado', 'pendiente')], 'monto')
+            ->withSum(['serviceChargeShares as pendiente_cargos' => fn ($q) => $q->where('estado', 'pendiente')], 'monto')
             ->orderBy('nombre')
             ->orderBy('apellido')
             ->paginate(15);

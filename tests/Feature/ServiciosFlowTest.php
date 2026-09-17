@@ -97,6 +97,29 @@ class ServiciosFlowTest extends TestCase
         $this->assertEqualsWithDelta(6000, $shareAna->monto, 0.001);
     }
 
+    public function test_listado_de_participantes_muestra_el_pendiente_combinado_de_compras_y_servicios(): void
+    {
+        ['user' => $user, 'juan' => $juan] = $this->escenario(10000);
+        // Netflix: Juan 60% de 10000 = 6000 pendiente.
+
+        $this->actingAs($user)->post('/purchases', [
+            'descripcion'          => 'Notebook',
+            'monto_total'          => 5000,
+            'cantidad_cuotas'      => 1,
+            'fecha_primera_cuota'  => '2026-08-10',
+            'avisar_participantes' => 1,
+            'splits'               => [
+                ['participant_id' => $juan->id, 'porcentaje' => 100],
+            ],
+        ]);
+        // Juan ahora debe 6000 (servicio) + 5000 (compra) = 11000.
+
+        $this->actingAs($user)->get(route('participants.index'))
+            ->assertStatus(200)
+            ->assertSee('11.000,00') // Juan: compra + servicio combinados
+            ->assertSee('4.000,00'); // Ana: solo el servicio (40% de 10000)
+    }
+
     public function test_porcentajes_que_no_suman_100_son_rechazados(): void
     {
         $user = User::factory()->create();

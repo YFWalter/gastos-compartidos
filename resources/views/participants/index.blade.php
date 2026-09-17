@@ -34,6 +34,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Pendiente</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                                 </tr>
                             </thead>
@@ -51,6 +52,10 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             {{ $participant->telefono ?: '—' }}
+                                        </td>
+                                        @php $pendiente = (float) $participant->pendiente_cuotas + (float) $participant->pendiente_cargos; @endphp
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium {{ $pendiente > 0 ? 'text-red-600' : 'text-gray-400' }}">
+                                            $ {{ number_format($pendiente, 2, ',', '.') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end gap-3">
